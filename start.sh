@@ -2,8 +2,6 @@
 
 VENV_DIR="learntrackervenv"
 
-# Скрипт для запуска LearnTracker на localhost
-
 echo "🚀 Запуск LearnTracker..."
 
 # Проверяем, установлен ли Docker
@@ -80,15 +78,8 @@ export POSTGRES_HOST=localhost
 export POSTGRES_PORT=5432
 export POSTGRES_DB=learntracker
 
-# Проверяем наличие uvicorn
-echo "🧰 Проверяем uvicorn..."
-if ! python3 -m uvicorn --version &> /dev/null; then
-    echo "❌ uvicorn не установлен. Устанавливаем вместе с зависимостями..."
-    pip install -r requirements.txt
-else
-    echo "📦 Проверяем зависимости Python..."
-    pip install -r requirements.txt
-fi
+# Устанавливаем зависимости Python
+pip install -r requirements.txt
 
 # Запускаем приложение
 echo "🌐 Запускаем веб-приложение на http://localhost:8000"
