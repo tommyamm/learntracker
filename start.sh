@@ -36,6 +36,26 @@ docker run --name learntracker-db \
 echo "⏳ Ждем запуска базы данных..."
 sleep 10
 
+# Проверяем наличие pip
+echo "🧰 Проверяем pip..."
+if ! python3 -m pip --version &> /dev/null; then
+    echo "❌ pip не установлен. Устанавливаем..."
+    python3 -m ensurepip --upgrade || {
+        echo "❌ Не удалось установить pip!"
+        exit 1
+    }
+fi
+
+# Проверяем наличие venv модуля
+echo "🧰 Проверяем модуль venv..."
+if ! python3 -m venv --help &> /dev/null; then
+    echo "❌ Модуль venv не установлен. Устанавливаем..."
+    sudo apt-get update && sudo apt-get install -y python3-venv || {
+        echo "❌ Не удалось установить python3-venv!"
+        exit 1
+    }
+fi
+
 if [ ! -d "$VENV_DIR" ]; then
     echo "🛠 Создание виртуального окружения..."
     python3 -m venv "$VENV_DIR"
@@ -60,11 +80,16 @@ export POSTGRES_HOST=localhost
 export POSTGRES_PORT=5432
 export POSTGRES_DB=learntracker
 
-# Устанавливаем зависимости Python, если они не установлены
-echo "📦 Проверяем зависимости Python..."
-pip install -r requirements.txt
+# Проверяем наличие uvicorn
+echo "🧰 Проверяем uvicorn..."
+if ! python3 -m uvicorn --version &> /dev/null; then
+    echo "❌ uvicorn не установлен. Устанавливаем вместе с зависимостями..."
+    pip install -r requirements.txt
+else
+    echo "📦 Проверяем зависимости Python..."
+    pip install -r requirements.txt
+fi
 
 # Запускаем приложение
 echo "🌐 Запускаем веб-приложение на http://localhost:8000"
 python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-
